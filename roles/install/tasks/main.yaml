@@ -1,0 +1,72 @@
+- name: install k3s prerequisites
+  action: >
+    {{ ansible_pkg_mgr }} name={{ k3s_packages }} state=present update_cache=yes
+
+- name: turn off firewalld
+  systemd:
+    name: firewalld
+    enabled: no
+    state: stopped
+
+- name: turn off iptables
+  systemd:
+    name: iptables
+    enabled: no
+    state: stopped
+
+
+- name: install module loader systemd unit file
+  copy:
+    src: load-k3s-modules.service
+    dest: /etc/systemd/system/load-k3s-modules.service
+
+- name: start load-k3s-modules.service
+  systemd:
+    state: started
+    name: load-k3s-modules
+    daemon_reload: yes
+    enabled: yes
+
+- name: Setup required sysctl params
+  copy:
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: persist sysctl params across reboots.
+  shell: sysctl --system
+
+- name: turn on containerd
+  systemd:
+    name: containerd
+    enabled: yes
+    state: started
+
+- name: is k3s installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: stat_result
+
+- block:
+  - name: download k3s files
+    shell: >
+      curl -sfL https://github.com/rancher/k3s/releases/download/{{k3s_version}}/k3s -o /usr/local/bin/k3s && \
+      chmod 0755 /usr/local/bin/k3s && \
+      curl -sfL https://get.k3s.io -o /usr/local/bin/install-k3s.sh && \
+      chmod 0755 /usr/local/bin/install-k3s.sh && \
+      restorecon -v /usr/local/bin/k3s
+
+  when: stat_result.stat.exists == False
+
+- name: add the masters
+  include_tasks:
+    file: "master.yaml"
+  tags:
+    - master
+  when: "'masters' in group_names"
+
+- name: add the nodes
+  include_tasks:
+    file: "node.yaml"
+  tags:
+    - node
+  when: "'nodes' in group_names"

@@ -1,0 +1,38 @@
+- name: is helm installed
+  shell: which helm
+  register: which_result
+
+- block:
+  - name: get helm
+    shell: >
+      curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh && \
+      chmod 700 get_helm.sh
+    args:
+      chdir: /tmp
+
+  - name: install helm
+    shell: >
+      ./get_helm.sh
+    args:
+      chdir: /tmp
+  when: which_result.rc != 0
+
+- name: create helm service account
+  shell: >
+    kubectl get serviceaccount --namespace kube-system tiller || \
+    kubectl create serviceaccount --namespace kube-system tiller
+  become: false
+
+- name: create helm service account clusterrolebinding
+  shell: >
+    kubectl get clusterrolebinding tiller-cluster-role || \
+    kubectl create clusterrolebinding tiller-cluster-role \
+      --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+  become: false
+
+- name: init helm
+  shell: >
+    export KUBECONFIG=/etc/rancher/k3s/k3s.yaml && \
+    helm init --history-max 20 --service-account tiller && \
+    helm repo update
+  become: false

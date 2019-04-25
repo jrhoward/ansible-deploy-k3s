@@ -1,0 +1,12 @@
+[Unit]
+Description=Load extra modules before k3s
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/modprobe nf_conntrack && /sbin/modprobe ip_conntrack && /sbin/modprobe overlay && /sbin/modprobe br_netfilter
+RemainAfterExit=true
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

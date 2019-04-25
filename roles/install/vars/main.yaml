@@ -1,0 +1,11 @@
+k3s_packages:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+  - socat
+  - containerd
+  - iproute
+  - iputils
+  - iptables
+  - policycoreutils-python-utils
+  - python3-libselinux

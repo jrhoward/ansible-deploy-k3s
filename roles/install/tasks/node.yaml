@@ -1,0 +1,25 @@
+- name: is k3s installed
+  stat:
+    path: /usr/local/bin/install-k3s.sh
+  register: stat_result
+
+- block:
+  - name: install node
+    shell: >
+      export INSTALL_K3S_SKIP_DOWNLOAD=true && \
+      export K3S_URL=https://{{master_ip}}:6443 && \
+      export K3S_TOKEN='{{ hostvars[groups['masters'][0]]['master_token'] }}' && \
+      /usr/local/bin/install-k3s.sh
+
+  - name: cleanup
+    file:
+      path: /usr/local/bin/install-k3s.sh
+      state: absent
+
+  when: stat_result.stat.exists == True
+
+- name: turn on k3s-agent
+  systemd:
+    name: k3s-agent
+    enabled: yes
+    state: started
