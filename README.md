@@ -2,15 +2,16 @@
 
 Installs k3s https://k3s.io/ with ansible in a multinode set up
 
-Review the inventory file inventory-example.ini
+Review and update the inventory file `inventory-example.ini`
 
+Then run
 ```
 
 ansible-playbook -i inventory-example.ini install.yaml
 
 ```
 
-## Limitations
+## Notes/Limitations
 
 - Tested on vanilla fedora29 servers with one master and multiple nodes.
 
