@@ -1,6 +1,6 @@
 ## Install k3s
 
-Installs k3s https://k3s.io/ with ansible in a multinode set up
+Installs k3s https://k3s.io/ with ansible in a multinode set up without docker. Uses containerd
 
 ## Usage
 
