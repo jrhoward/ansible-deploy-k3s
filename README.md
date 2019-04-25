@@ -2,6 +2,8 @@
 
 Installs k3s https://k3s.io/ with ansible in a multinode set up
 
+## Usage
+
 Review and update the inventory file `inventory-example.ini`
 
 Then run
