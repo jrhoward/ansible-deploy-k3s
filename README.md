@@ -17,6 +17,8 @@ ansible-playbook -i inventory-example.ini install.yaml
 
 - Tested on bare metal vanilla fedora 29 servers with one master and multiple nodes.
 
+- Probably wont work on non redhat based distros 
+
 - k3s does not support multiple masters yet as of v0.4.0
 
 - Firewall is turned off
