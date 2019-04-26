@@ -17,8 +17,14 @@ ansible-playbook -i inventory-example.ini install.yaml
 
 - Tested on bare metal vanilla fedora 29 servers with one master and multiple nodes.
 
-- Probably wont work on non redhat based distros 
+- Probably wont work on non redhat based distros
 
 - k3s does not support multiple masters yet as of v0.4.0
 
 - Firewall is turned off
+
+```
+
+KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm install stable/nfs-server-provisioner --name nfs-server --set=image.tag=v1.0.8,resources.limits.cpu=200m
+
+```
