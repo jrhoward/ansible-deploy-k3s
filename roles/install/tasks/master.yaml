@@ -22,5 +22,9 @@
     enabled: yes
     state: started
 
+- name: register K3S_TOKEN
+  shell: cat /var/lib/rancher/k3s/server/node-token
+  register: token
+
 - set_fact:
-    master_token: "{{ lookup('file','/var/lib/rancher/k3s/server/node-token') }}"
+    master_token: "{{ token.stdout }}"

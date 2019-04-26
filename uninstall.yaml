@@ -1,0 +1,21 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: execute uninstall k3s script
+      shell: "/usr/local/bin/k3s-uninstall.sh"
+      ignore_errors: true
+
+    - name: execute uninstall k3s script
+      shell: "/usr/local/bin/k3s-agent-uninstall.sh"
+      ignore_errors: true
+
+    - name: uninstall containerd
+      action: >
+        {{ ansible_pkg_mgr }} name={{ pkgs }} state=absent
+      vars:
+        pkgs:
+          - containerd
+
+    - name: Unconditionally reboot the machine
+      reboot:

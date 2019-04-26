@@ -7,12 +7,14 @@
     name: firewalld
     enabled: no
     state: stopped
+  ignore_errors: true
 
 - name: turn off iptables
   systemd:
     name: iptables
     enabled: no
     state: stopped
+  ignore_errors: true
 
 
 - name: install module loader systemd unit file
