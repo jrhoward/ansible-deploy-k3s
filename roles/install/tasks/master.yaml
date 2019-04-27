@@ -1,26 +1,44 @@
 - name: is k3s installed
   stat:
     path: /usr/local/bin/install-k3s.sh
-  register: stat_result
+  register: stat_k3s_install
 
 - block:
   - name: install master
     shell: >
-      export INSTALL_K3S_SKIP_DOWNLOAD=true && \
+      export INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_SKIP_START=true && \
       /usr/local/bin/install-k3s.sh
+    ignore_errors: true
 
   - name: cleanup
     file:
       path: /usr/local/bin/install-k3s.sh
       state: absent
 
-  when: stat_result.stat.exists == True
+  when: stat_k3s_install.stat.exists == True
 
 - name: turn on k3s
   systemd:
     name: k3s
     enabled: yes
     state: started
+
+- name: is k3s installed
+  stat:
+    path: /var/lib/rancher/k3s/admin-user.yaml
+  register: stat_admin
+
+- block:
+  - name: copy admin service account file
+    copy:
+      src: admin-user.yaml
+      dest: /var/lib/rancher/k3s/admin-user.yaml
+
+  - name: deploy the admin service account
+    shell: kubectl apply -f /var/lib/rancher/k3s/admin-user.yaml
+    become: False
+
+  when: stat_admin.stat.exists == False
 
 - name: register K3S_TOKEN
   shell: cat /var/lib/rancher/k3s/server/node-token

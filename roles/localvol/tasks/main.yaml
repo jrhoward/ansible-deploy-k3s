@@ -1,0 +1,12 @@
+- name: create default volumes
+  file:
+    path: /mnt/disks/{{ item }}
+    state: directory
+    mode: 0755
+  with_items:
+    "{{ filemounts }}"
+
+- name: mount tmpfs
+  shell: mount -t tmpfs {{ item }} /mnt/disks/{{ item }}
+  with_items:
+    "{{ filemounts }}"

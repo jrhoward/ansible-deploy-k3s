@@ -5,10 +5,12 @@
     - name: execute uninstall k3s script
       shell: "/usr/local/bin/k3s-uninstall.sh"
       ignore_errors: true
+      when: "'masters' in group_names"
 
     - name: execute uninstall k3s script
       shell: "/usr/local/bin/k3s-agent-uninstall.sh"
       ignore_errors: true
+      when: "'nodes' in group_names"
 
     - name: uninstall containerd
       action: >
